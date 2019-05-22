@@ -34,7 +34,11 @@ app.get('/authResult', function (req, res) {
         method : "POST",
         url :getTokenUrl,
         headers : {
+            "HTTP URL" : "https://testapi.open-platform.or.kr/oauth/2.0/token.",
+            "HTTP Method" : "POST",
+            "Content-Type" : "application/x-www-form-urlencoded; charset=UTF-8"
         },
+
         form : {
             code : auth_code,
             client_id : "l7xxcf48e8994cac43e1b329def19c111b6a",
@@ -56,16 +60,20 @@ app.get('/authResult', function (req, res) {
 })
 
 app.post('/join', function(req, res){
+    console.log('가입 시작')
     console.log(req);
     var name = req.body.name;
     var birthday = new Date();
     var email = req.body.email;
     var password = req.body.password;
     var phone = "01012345678";
+    var accessToken = req.body.accessToken;
+    var refreshToken = req.body.refreshToken;
+    var useNum = req.body.useseqnum;
 
     console.log(name, email, password);
-    var sql = 'INSERT INTO `fintech`.`user` (`name`, `birthday`, `user_id`, `user_password`, `phone`) VALUES (?,?,?,?,?);'
-    connection.query(sql, [name, birthday, email, password, phone], function (error, results) {
+    var sql = 'INSERT INTO `fintech`.`user` (`name`, `birthday`, `user_id`, `user_password`, `phone`, accessToken, refreshToken, userseqnum) VALUES (?,?,?,?,?,?,?,?);'
+    connection.query(sql, [name, birthday, email, password, phone, accessToken, refreshToken, useNum], function (error, results) {
       if (error) throw error;
       else {
           console.log(this.sql);
@@ -79,7 +87,5 @@ app.get('/ajaxTest', function(req, res){
     var result = "hello";
     res.json(result);
 })
-
-
 
 app.listen(3000)

@@ -58,7 +58,25 @@
                             <span>Email</span>
                             <em>(required)</em>
                             <input type="email" id="emailInput" placeholder="Email">
-                        </div>         
+                        </div>
+                        <div class="input-style input-light has-icon input-style-1 input-required">
+                                <i class="input-icon fa fa-at"></i>
+                                <span>access token</span>
+                                <em>(required)</em>
+                                <input type="text" id="accessToken" placeholder="accessToken">
+                            </div>
+                        <div class="input-style input-light has-icon input-style-1 input-required">
+                                <i class="input-icon fa fa-at"></i>
+                                <span>refresh token</span>
+                                <em>(required)</em>
+                        <input type="text" id="refreshToken" placeholder="refreshToken">
+                            </div>        
+                            <div class="input-style input-light has-icon input-style-1 input-required">
+                                    <i class="input-icon fa fa-at"></i>
+                                    <span>userId</span>
+                                    <em>(required)</em>
+                            <input type="text" id="useseqnum" placeholder="useseqnum">
+                                </div>       
                         <div class="input-style input-light has-icon input-style-1 input-required">
                             <i class="input-icon fa fa-lock font-11"></i>
                             <span>Password</span>
@@ -71,12 +89,10 @@
                             <em>(required)</em>
                             <input type="password" placeholder="Confirm your Password">
                         </div>         
-                        <!-- <button type="button" id="authBtn" class="back-button button button-full button-m shadow-large button-round-small">CREATE ACCOUNT</button> -->
+                        <a href="pageapp-login.html" class="color-white opacity-50 text-center font-11 top-30">Already Registered? Sign In here</a>
                         <button type="button" id="authBtn" class="button button-full button-m shadow-large button-round-small bg-highlight top-30 bottom-0">인증받기</button>
                         <a href="#" id="joinBtn" class="button button-full button-m shadow-large button-round-small bg-highlight top-30 bottom-0">CREATE ACCOUNT</a>
-
                     </div>
-
                 </div>
             </div>   
             <div class="caption-overlay bg-black opacity-80"></div>
@@ -213,48 +229,50 @@
 <script type="text/javascript" src="scripts/plugins.js"></script>
 <script type="text/javascript" src="scripts/custom.js"></script>
 <script>
-    $("#authBtn").click(function(){
-        var client_id = "l7xxcf48e8994cac43e1b329def19c111b6a";
-        var redirect_url = "http://localhost:3000/authResult";
-        var scope = "login inquiry transfer"; // 토큰의 범위를 지정해주는 파라미터
+
+
+    $('#authBtn').click(function(){
+        var client_id = "l7xx9aeec8195c534ad9a0ebd55aa6bc9e81";
+        var redirect_uri = "http://localhost:3000/authResult";
+        var scope = "login inquiry transfer";
         var response_type = "JSON";
         var qs = 
         "?response_type=code&"
         + "client_id="+client_id+"&"
         + "redirect_uri=http://localhost:3000/authResult&"
-        + "scope=login inquiry transfer&"
+        + "scope="+scope+"&"
         + "auth_type=0&"
-        + "invoke_type=ajax";
+        + "invoke_type=ajax"
         $.ajax({
-            url:'https://testapi.open-platform.or.kr/oauth/2.0/authorize2' + qs, // 특정 url에 request
+            url:'https://testapi.open-platform.or.kr/oauth/2.0/authorize2'+ qs,
             type : 'GET',
             success:function(data){
-                    window.name="parents";
-                    console.log(data.location);
-                    var tmpwindow = window.open("about:blank");
-                    tmpwindow.location = data.location; 
-                
-  
+                window.name ="parents";
+                console.log(data.location);
+                var tmpwindow = window.open("about:blank");
+                tmpwindow.location = data.location;//추가
             }
         })
-    });
-
+    })
 
     $("#joinBtn").click(function(){
-        //alert( $("#emailInput").val());
         $.ajax({
-            url:'http://localhost:3000/join', // 특정 url에 request
+            url:'http://localhost:3000/join',
             type : 'POST',
             data : {
                 name : $("#nameInput").val(),
                 email : $("#emailInput").val(),
-                password : $("#passwordInput").val()
+                password : $("#passwordInput").val(),
+                accessToken : $("#accessToken").val(),
+                refreshToken : $("#refreshToken").val(),
+                useseqnum : $("#useseqnum").val(),
+
             },
             success:function(data){
                 alert(data);
             }
         })
     });
-    
 </script>
 </body>
+
