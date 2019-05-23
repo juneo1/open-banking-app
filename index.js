@@ -162,7 +162,7 @@ app.get('/main', function(req, res) {
 
 app.get('/tokenTest', auth, function(req, res) {
     //console.log(req.decoded.userName);
-    console.log(req.decoded);
+    //console.log(req.decoded);
 })
 
 app.get('/ajaxTest', function(req, res){
