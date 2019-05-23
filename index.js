@@ -2,6 +2,9 @@ var express = require('express')
 const app = express()
 var mysql = require('mysql');
 var request = require('request');
+var jwt = require('jsonwebtoken');
+var tokenKey = 'wn)dlfosemtltmxpawm'
+var auth = require('./lib/auth');
 
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -81,24 +84,47 @@ app.post('/join', function(req, res){
 })
 
 app.post('/login', function(req, res) {
+    console.log(req);
     var userEmail = req.body.email;
     var userPassword = req.body.password;
+    console.log("/login");
     console.log(userEmail, userPassword);
+
     var sql = "SELECT * FROM user WHERE user_id = ?";
     connection.query(sql, [userEmail], function(error, results) {
         if(error) throw error;
         else {
-            console.log(results);
+            console.log(results[0]);
+            console.log(userPassword, results[0].user_password);
             if(userPassword == results[0].user_password){
-                res.json('LOGIN 성공');
+                jwt.sign(
+                    {
+                        userName : results[0].name,
+                        userId : results[0].user_id
+                    },
+                    tokenKey,
+                    {
+                        expiresIn : '1d',
+                        issuer : 'fintech.admin',
+                        subject : 'user.login.info'
+                    },
+                    function(err, token){
+                        console.log('로그인 성공', token)
+                        res.json(token)
+                    }
+                )
             }
             else {
                 res.json('등록정보가 없습니다');
             }
-            res.json(results);
         }
-    })
-    res.json('LOGIN SUCCESS');
+    });
+})
+
+
+app.get('/tokenTest', auth, function(req, res) {
+    //console.log(req.decoded.userName);
+    console.log(req.decoded);
 })
 
 app.get('/ajaxTest', function(req, res){
