@@ -5,6 +5,7 @@ var request = require('request');
 var jwt = require('jsonwebtoken');
 var tokenKey = 'wn)dlfosemtltmxpawm'
 var auth = require('./lib/auth');
+var cors = require('cors');
 
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -16,6 +17,7 @@ connection.connect();
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({extended:false}));
 
 app.set('views', __dirname + '/views');
@@ -83,6 +85,10 @@ app.post('/join', function(req, res){
     });
 })
 
+app.get('/login', function (req, res) {
+    res.render('login')
+     })
+
 app.post('/login', function(req, res) {
     console.log(req);
     var userEmail = req.body.email;
@@ -94,8 +100,8 @@ app.post('/login', function(req, res) {
     connection.query(sql, [userEmail], function(error, results) {
         if(error) throw error;
         else {
-            console.log(results[0]);
-            console.log(userPassword, results[0].user_password);
+            //console.log(results[0]);
+            //console.log(userPassword, results[0].user_password);
             if(userPassword == results[0].user_password){
                 jwt.sign(
                     {
@@ -121,6 +127,38 @@ app.post('/login', function(req, res) {
     });
 })
 
+
+app.post('/getUser', auth, function(req, res) {
+    var userId = req.decoded.userId;
+    var sql = "SELECT userseqnum, accessToken FROM user WHERE user_id = ?";
+    connection.query(sql, [userId], function (err, results){
+        if(err) {
+            console.error(err);
+            throw err;
+        }
+        else {
+            var option = {
+                method : "GET",
+                url :"https://testapi.open-platform.or.kr/user/me?user_seq_no=" + results[0].userseqnum,
+                headers : {
+                    "Authorization" : "Bearer " + results[0].accessToken
+                }
+            };
+
+        request(option, function(err, response, body){
+            if(err) throw err;
+            else { 
+                console.log(body)
+                res.json(JSON.parse(body));
+            }
+        })
+        }
+    })
+})
+
+app.get('/main', function(req, res) {
+    res.render('main')
+})
 
 app.get('/tokenTest', auth, function(req, res) {
     //console.log(req.decoded.userName);
