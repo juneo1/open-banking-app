@@ -156,6 +156,41 @@ app.post('/getUser', auth, function(req, res) {
     })
 })
 
+app.post('/balance', auth, function(req, res) {
+    var userId = req.decoded.userId;
+    var finNum = req.body.finNum;
+    var tran_dtime = "20190523154320";
+    var sql = "SELECT userseqnum, accessToken FROM user WHERE user_id = ?";
+    connection.query(sql, [userId], function (err, results){
+        if(err) {
+            console.error(err);
+            throw err;
+        }
+        else {
+            var option = {
+                method : "GET",
+                url :"https://testapi.open-platform.or.kr/v1.0/account/balance?fintech_use_num=" + results[0].userseqnum + "&tran_dtime=" + tran_dtime,
+                headers : {
+                    "Authorization" : "Bearer " + results[0].accessToken
+                }
+            };
+
+        request(option, function(err, response, body){
+            if(err) throw err;
+            else { 
+                console.log(body)
+                res.render('balance', {data : JSON.parse(body)});
+            }
+        })
+        }
+    })
+
+})
+
+app.get('/balance', function(req, res){
+    res.render('balance')
+})
+
 app.get('/main', function(req, res) {
     res.render('main')
 })

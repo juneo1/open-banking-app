@@ -1,19 +1,8 @@
 <% include ./hf/header.ejs %>
 <div class="page-content header-clear-medium">
-    <div data-height="150" class="caption caption-margins round-medium shadow-large">
-        <div class="caption-center right-15 top-15 text-right">
-            <a href="#" class="back-button button button-xs button-round-huge bg-highlight">송금</a>
-            <a href="#" class="back-button button button-xs button-round-huge bg-highlight">결제</a>
-        </div>
-        <div class="caption-center left-15 text-left">
-            <h1 class="color-white bolder">7,000 원</h1>
-            <p class="under-heading color-white opacity-90 bottom-x0">
-                KEB 하나 ****129
-            </p>
-        </div>
-        <div class="caption-overlay bg-black opacity-70"></div>
-        <div class="caption-bg bg-18"></div>
+    <div id = 'cardList'>    
     </div>
+    
     <div class="content-boxed content-boxed-full">
         <div class="content bottom-0">
             <div class="link-list link-list-2">
@@ -34,22 +23,41 @@
         </div>
     </div>
 </div>
-
 <script>
-   var jwtToken = sessionStorage.getItem('jwtToken');
-   console.log(jwtToken);
-           $.ajax({
-               url:'http://localhost:3000/getUser',
-               type : 'POST',
-               header : {
-                   'x-access-token' : jwtToken
-               },
-               data : {
-               },
-               success:function(data){
-                   console.log(data);
-               }
-           })
-</script>
+    var jwtToken = sessionStorage.getItem('jwtToken');
+        $.ajax({
+            url:'http://localhost:3000/getUser',
+            type : 'POST',
+            headers : {
+                'x-access-token' : jwtToken
+            },
+            data : {
+            },
+            success:function(data){
+                console.log(data);
+                var resultList = data.res_list;
+                for(var i = 0; i < resultList.length; i++){
+                    var resultElement = resultList[i];
+                    $("#cardList").append(
+                        '    <div data-height="150" style="height : 150px" class="caption caption-margins round-medium shadow-large">\n' +
+        '        <div class="caption-center right-15 top-15 text-right">\n' +
+        '            <a href="/balance?fin_use_num='+resultElement.fintech_use_num+'" class="back-button button button-xs button-round-huge bg-highlight">잔액조회</a>\n' +
+        '            <a href="#" class="back-button button button-xs button-round-huge bg-highlight">결제</a>\n' +
+        '        </div>\n' +
+        '        <div class="caption-center left-15 text-left">\n' +
+        '            <h1 class="color-white bolder">'+resultElement.bank_name+'</h1>\n' +
+        '            <p class="under-heading color-white opacity-90 bottom-0">\n' +
+        '                ' + resultElement.fintech_use_num +
+        '            </p>\n' +
+        '        </div>\n' +
+        '        <div class="caption-overlay bg-black opacity-70"></div>\n' +
+        '        <div class="caption-bg bg-18"></div>\n' +
+        '    </div>\n'
 
+                    )
+                }
+            }
+        })
+
+</script>
 <% include ./hf/footer.ejs %>

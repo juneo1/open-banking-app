@@ -1,0 +1,59 @@
+<% include ./hf/header.ejs %>
+<div class="page-content header-clear-medium">
+    <div data-height="150" class="caption caption-margins round-medium shadow-large">
+        <div class="caption-center right-15 top-15 text-right">
+            <a href="#" class="back-button button button-xs button-round-huge bg-highlight">송금</a>
+            <a href="#" class="back-button button button-xs button-round-huge bg-highlight">결제</a>
+        </div>
+        <div class="caption-center left-15 text-left">
+            <h1 class="color-white bolder">7,000 원</h1>
+            <p class="under-heading color-white opacity-90 bottom-x0">
+                KEB 하나 ****129
+            </p>
+        </div>
+        <div class="caption-overlay bg-black opacity-70"></div>
+        <div class="caption-bg bg-18"></div>
+    </div>
+
+    
+
+    <div class="content-boxed content-boxed-full">
+        <div class="content bottom-0">
+            <div class="link-list link-list-2">
+                <a href="component-ad-boxes.html">
+                    <i class="fa fa-dollar-sign bg-green1-dark round-tiny"></i>
+                    <span>광고 보기</span>
+                    <strong>광고를 보고 포인트를 쌓으세요</strong>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                <a href="component-typography.html" class="no-border">
+                    <i class="fa fa-bold bg-blue2-dark round-tiny"></i>
+                    <span>가상화페 투자</span>
+                    <strong>가상화페에 투자하여 인생역전의....</strong>
+                    <i class="fa fa-angle-right"></i>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+   var jwtToken = sessionStorage.getItem('jwtToken');
+   console.log(jwtToken);
+           $.ajax({
+               url:'http://localhost:3000/getUser',
+               type : 'POST',
+               header : {
+                   'x-access-token' : jwtToken
+               },
+               data : {
+               },
+               success:function(data){
+                   console.log(data);
+                   var resultList = data.res.list
+               }
+           })
+</script>
+
+<% include ./hf/footer.ejs %>
