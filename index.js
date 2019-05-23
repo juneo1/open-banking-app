@@ -206,7 +206,4 @@ app.get('/ajaxTest', function(req, res){
     res.json(result);
 })
 
-
-
-
 app.listen(3000)
