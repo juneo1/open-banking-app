@@ -247,25 +247,38 @@ app.post('/withdraw', auth, function(req, res) {
                 method : "POST",
                 url :"https://testapi.open-platform.or.kr/v1.0/transfer/withdraw",
                 headers : {
-                    "Content-Type" : "application/json; charset=UTF-8"
+                    'Authorization' : 'Bearer ' + result[0].accessToken,
+                    'Content-Type' : 'application/json; charset=UTF-8'
                 },
-                form : {
-                    dps_print_content : auth_code,
+                json : {
+                    dps_print_content : '어준',
                     fintech_use_num : finNum,
-                    tran_amt : "1000",
-                    tran_dtime : "20160310101921",
+                    tran_amt : 1000,
+                    print_content : '어준',
+                    tran_dtime : '20190523101921'
                 }
             }
-        request(option, function(err, response, body){
-            if(err) throw err;
-            else { 
-                console.log(body)
-                res.render('withdraw', {data : JSON.parse(body)});
-            }
-        })
+            request(option, function(err, response, body){
+                if(err) throw err;
+                else {
+                    console.log(body);
+                    var requestResult = body
+                    if(requestResult.rsp_code == "A0000"){
+                        var sql = "UPDATE user set point = point + ? WHERE user_id = ?"
+                        connection.query(sql, [requestResult.tran_amt, userId], function(err, result){
+                            if(err){
+                                console.error(err);
+                                throw err;
+                            }
+                            else {
+                                res.json(1);
+                            }
+                        })
+                    }
+                }
+            })
         }
     })
-
 })
 
 app.get('/balance', function(req, res){
