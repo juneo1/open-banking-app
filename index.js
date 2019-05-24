@@ -7,6 +7,7 @@ var tokenKey = 'wn)dlfosemtltmxpawm'
 var auth = require('./lib/auth');
 var cors = require('cors');
 
+
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
@@ -88,6 +89,14 @@ app.post('/join', function(req, res){
 app.get('/login', function (req, res) {
     res.render('login')
      })
+
+app.get('/qr', function(req, res){
+    res.render('qr')
+})
+
+app.get('/withdraw', function(req, res){
+    res.render('withdraw')
+})
 
 app.post('/login', function(req, res) {
     console.log(req);
@@ -180,6 +189,78 @@ app.post('/balance', auth, function(req, res) {
             else { 
                 console.log(body)
                 res.render('balance', {data : JSON.parse(body)});
+            }
+        })
+        }
+    })
+
+})
+
+app.post('/transaction_list', auth, function(req, res) {
+    var userId = req.decoded.userId;
+    var finNum = req.body.finNum;
+    var tran_dtime = "20190523154320";
+    var sql = "SELECT userseqnum, accessToken FROM user WHERE user_id = ?";
+    connection.query(sql, [userId], function (err, results){
+        if(err) {
+            console.error(err);
+            throw err;
+        }
+        else {
+            var option = {
+                method : "GET",
+                url :"https://testapi.open-platform.or.kr/v1.0/account/transaction_list?"
+                + "fintech_use_num=" + results[0].userseqnum 
+                + "&inquiry_type=A" 
+                + "&from_data=20160101" 
+                + "&to_data=20160101"
+                + "&sort_order=A"
+                + "&page_index=1"
+                + "&tran_dtime=20160101121212",
+                headers : {
+                    "Authorization" : "Bearer " + results[0].accessToken
+                }
+            };
+
+        request(option, function(err, response, body){
+            if(err) throw err;
+            else { 
+                console.log(body)
+                res.json(JSON.parse(body));
+            }
+        })
+        }
+    })
+})
+
+app.post('/withdraw', auth, function(req, res) {
+    var userId = req.decoded.userId;
+    var finNum = req.body.finNum;
+    var sql = "SELECT userseqnum, accessToken FROM user WHERE user_id = ?";
+    connection.query(sql, [userId], function (err, results){
+        if(err) {
+            console.error(err);
+            throw err;
+        }
+        else {
+            var option = {
+                method : "POST",
+                url :"https://testapi.open-platform.or.kr/v1.0/transfer/withdraw",
+                headers : {
+                    "Content-Type" : "application/json; charset=UTF-8"
+                },
+                form : {
+                    dps_print_content : auth_code,
+                    fintech_use_num : finNum,
+                    tran_amt : "1000",
+                    tran_dtime : "20160310101921",
+                }
+            }
+        request(option, function(err, response, body){
+            if(err) throw err;
+            else { 
+                console.log(body)
+                res.render('withdraw', {data : JSON.parse(body)});
             }
         })
         }
